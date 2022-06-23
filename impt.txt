@@ -1,0 +1,34 @@
+while mmaking an api 
+
+remember while making a funciton in api
+
+set request and response that is http request and http response
+in this case  c. gincontext contian http request and http response
+
+
+then comming to to tghe body part :=-
+
+if we make  the logic in the funciton itself than that is fine
+but its better to create another function for the individual purposes
+
+make response of each declaration
+
+the response also contain JSON http status
+
+and that is 
+                == `any_condition/logic`{
+                                res := gin.H{
+                                    "response_text":response_text_container
+                                }
+                                // then to create the return that is http status with the final return value for that declearation
+                                // with go gin we write
+                                // the status container also contain
+                                c.JSON(http.`status_type`,res)
+                                
+                }
+
+
+A middleware handler is simply an http. Handler that wraps another 
+http. Handler to do some pre- and/or post-processing of the request. 
+It's called "middleware" because it sits 
+in the middle between the Go web server and the actual handler.
