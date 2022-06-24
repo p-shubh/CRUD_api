@@ -182,6 +182,7 @@ func DeleteUser(c *gin.Context) {
 	delete_user := deleteUserByID(userID)
 	res := gin.H{
 		"success": true,
+		"message": "user deletd",
 		"user":    delete_user,
 	}
 	c.JSON(http.StatusOK, res)
