@@ -22,7 +22,7 @@ func main() {
 	Data = make(map[string]User)
 	r := gin.Default()
 	setupRoutes(r)
-	r.Run(":8055")
+	r.Run(":8082")
 }
 
 /*
@@ -53,8 +53,8 @@ func GetUserByUserID(c *gin.Context) { //gin.context contains both http request 
 		return
 	}
 
-	Pswd, ok := c.Params.Get("password")
-	if ok == false {
+	Pswd := c.GetHeader("password")
+	if Pswd == "" {
 		res := gin.H{
 			"error": "password is missing",
 		}
@@ -208,29 +208,31 @@ func DeleteUser(c *gin.Context) { //r.DELETE("/user/:user_id", DeleteUser)
 			"success": false,
 		}
 		c.JSON(http.StatusBadRequest, res)
+	} else {
+
+		delete_user := deleteUserByID(userID)
+		res := gin.H{
+			"message": delete_user,
+		}
+		c.JSON(http.StatusOK, res)
 	}
 
-	// reqBody := User{}
-
-	// if reqBody.Password == "" {
-	// 	res := gin.H{
-	// 		"error": "password must not be empty",
-	// 	}
-	// 	c.JSON(http.StatusBadRequest, res)
-	// 	return
-	// }
-
-	// if reqBody.Password != Pswd {
-	// 	res := gin.H{
-	// 		"error": "password is incorrect",
-	// 	}
-	// 	c.JSON(http.StatusBadRequest, res)
-	// 	return
-	// }
-
-	delete_user := deleteUserByID(userID)
-	res := gin.H{
-		"message": delete_user,
-	}
-	c.JSON(http.StatusOK, res)
 }
+
+// reqBody := User{}
+
+// if reqBody.Password == "" {
+// 	res := gin.H{
+// 		"error": "password must not be empty",
+// 	}
+// 	c.JSON(http.StatusBadRequest, res)
+// 	return
+// }
+
+// if reqBody.Password != Pswd {
+// 	res := gin.H{
+// 		"error": "password is incorrect",
+// 	}
+// 	c.JSON(http.StatusBadRequest, res)
+// 	return
+// }
