@@ -21,7 +21,7 @@ func main() {
 	Data = make(map[string]User)
 	r := gin.Default()
 	setupRoutes(r)
-	r.Run(":8100")
+	r.Run(":8006")
 }
 
 /*
@@ -36,7 +36,7 @@ func main() {
 
 func setupRoutes(r *gin.Engine) {
 	r.GET("/user/:user_id", GetUserByUserID)
-	r.GET("/:user ", GetAllUsers)
+	r.GET("/user ", GetAllUsers)
 	r.POST("/user", CreateUser)
 	r.PUT("/user/:user_id", UpdateUser)
 	r.DELETE("/user/:user_id", DeleteUser)
@@ -63,7 +63,7 @@ func GetUserByUserID(c *gin.Context) { //gin.context contains both http request 
 // GetAllUser  function
 func GetAllUsers(c *gin.Context) {
 	res := gin.H{ //res:=  creating a response
-		"user": Data,
+		"User": Data,
 	}
 	c.JSON(http.StatusOK, res) //sending response
 }
@@ -179,13 +179,13 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	Data[userID] = reqBody
+	delete_user := deleteUserByID(userID)
 	res := gin.H{
 		"success": true,
-		"user":    reqBody,
+		"user":    delete_user,
 	}
 	c.JSON(http.StatusOK, res)
-
+	return
 }
 
 //
