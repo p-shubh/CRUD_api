@@ -18,10 +18,10 @@ var Data map[string]User //data is of map type user is custom type data
 
 func main() {
 
-	Data = make(map[string]User)
+	//Data = make(map[string]User)
 	r := gin.Default()
 	setupRoutes(r)
-	r.Run(":8006")
+	r.Run(":8094")
 }
 
 /*
@@ -36,7 +36,7 @@ func main() {
 
 func setupRoutes(r *gin.Engine) {
 	r.GET("/user/:user_id", GetUserByUserID)
-	r.GET("/user ", GetAllUsers)
+	r.GET("/user2", GetAllUser)
 	r.POST("/user", CreateUser)
 	r.PUT("/user/:user_id", UpdateUser)
 	r.DELETE("/user/:user_id", DeleteUser)
@@ -60,12 +60,14 @@ func GetUserByUserID(c *gin.Context) { //gin.context contains both http request 
 
 }
 
-// GetAllUser  function
-func GetAllUsers(c *gin.Context) {
+// GetAllUser function
+func GetAllUser(c *gin.Context) {
+
 	res := gin.H{ //res:=  creating a response
 		"User": Data,
 	}
 	c.JSON(http.StatusOK, res) //sending response
+	// return
 }
 
 // CreateUser POST
@@ -182,7 +184,7 @@ func DeleteUser(c *gin.Context) {
 	delete_user := deleteUserByID(userID)
 	res := gin.H{
 		"success": true,
-		"message": "user deletd",
+		"message": "user deleted",
 		"user":    delete_user,
 	}
 	c.JSON(http.StatusOK, res)
