@@ -18,10 +18,10 @@ var Data map[string]User //data is of map type user is custom type data
 
 func main() {
 
-	//Data = make(map[string]User)
+	Data = make(map[string]User)
 	r := gin.Default()
 	setupRoutes(r)
-	r.Run(":8094")
+	r.Run(":8080")
 }
 
 /*
