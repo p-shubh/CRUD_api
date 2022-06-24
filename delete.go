@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func deleteUserByID(userID string) string {
-	user := User{}
+	// user := User{}
 	message := "invalid user"
 	if user, ok := Data[userID]; ok {
 
@@ -12,6 +12,6 @@ func deleteUserByID(userID string) string {
 		fmt.Println(user)
 		return message
 	}
-	fmt.Println(user)
+	// fmt.Println(user)
 	return message
 }

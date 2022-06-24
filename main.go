@@ -7,11 +7,12 @@ import (
 )
 
 type User struct {
-	Name   string `json:"name"`
-	Email  string `json:"email"`
-	Phone  string `json:"phone"`
-	UserID string `json:"user_id"`
-	City   string `json:"city"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	UserID   string `json:"user_id"`
+	City     string `json:"city"`
+	Password string `json:"password"`
 }
 
 var Data map[string]User //data is of map type user is custom type data
@@ -21,7 +22,7 @@ func main() {
 	Data = make(map[string]User)
 	r := gin.Default()
 	setupRoutes(r)
-	r.Run(":8080")
+	r.Run(":8055")
 }
 
 /*
@@ -48,11 +49,21 @@ func GetUserByUserID(c *gin.Context) { //gin.context contains both http request 
 		res := gin.H{
 			"error": "user_id_is_missing",
 		}
-		c.JSON(http.StatusOK, res)
+		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	user := getUserByID(UserID)
+	Pswd, ok := c.Params.Get("password")
+	if ok == false {
+		res := gin.H{
+			"error": "password is missing",
+		}
+		c.JSON(http.StatusBadRequest, res)
+		return
+
+	}
+
+	user := getUserByID(UserID, Pswd)
 	res := gin.H{
 		"user": user,
 	}
@@ -91,6 +102,14 @@ func CreateUser(c *gin.Context) { //gin.context contains both http request and h
 		return
 	}
 
+	if reqBody.Password == "" {
+		res := gin.H{
+			"error": "password must not be empty",
+		}
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
 	Data[reqBody.UserID] = reqBody
 	res := gin.H{
 		"Sucesss": true,
@@ -103,28 +122,39 @@ func CreateUser(c *gin.Context) { //gin.context contains both http request and h
 // UPDATE User PUT
 func UpdateUser(c *gin.Context) {
 	userID, ok := c.Params.Get("user_id")
+	if ok == false {
+		res := gin.H{ /*gin.H is defined as type H map[string]struct{}*/
+			"error": "user_id is missing",
+		}
+		c.JSON(http.StatusBadRequest, res) // we have to give response status ok but the user_id is wrong so it
+		return
+	}
+
+	Pswd, ok := c.Params.Get("password")
+	if ok == false {
+		res := gin.H{
+			"error": "password is missing",
+		}
+		c.JSON(http.StatusBadRequest, res)
+		return
+
+	}
+
 	/*
 		use the function arguments method (the first method),
 		validate the HTTP parameters with c.Validation.Required("addr").Ok?
 	*/
 
-	if ok == false {
-		res := gin.H{ /*gin.H is defined as type H map[string]struct{}*/
-			"error": "user_id is missing",
-		}
-		c.JSON(http.StatusOK, res) // we have to give response status ok but the user_id is wrong so it
-	}
-
 	reqBody := User{}
-	err := c.Bind(&reqBody)
+	// err := c.Bind(&reqBody)
 
-	if err != nil {
-		res := gin.H{
-			"error": err,
-		}
-		c.JSON(http.StatusBadRequest, res)
-		return
-	}
+	// if err != nil {
+	// 	res := gin.H{
+	// 		"error": err,
+	// 	}
+	// 	c.JSON(http.StatusBadRequest, res)
+	// 	return
+	// }
 
 	if reqBody.UserID == "" {
 		res := gin.H{
@@ -143,6 +173,14 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
+	if reqBody.Password != Pswd {
+		res := gin.H{
+			"error": "password does not match",
+		}
+		c.JSON(http.StatusBadRequest, res)
+		return
+	}
+
 	Data[userID] = reqBody
 	res := gin.H{
 		"success": true,
@@ -152,43 +190,47 @@ func UpdateUser(c *gin.Context) {
 
 }
 
-func DeleteUser(c *gin.Context) {
+func DeleteUser(c *gin.Context) { //r.DELETE("/user/:user_id", DeleteUser)
+
 	userID, ok := c.Params.Get("user_id")
 
 	if ok == false {
 		res := gin.H{ /*gin.H is defined as type H map[string]struct{}*/
 			"error": "user id is missing",
 		}
-		c.JSON(http.StatusOK, res) // we have to give response status ok but the user_id is wrong so it
+		c.JSON(http.StatusBadRequest, res) // we have to give response status ok but the user_id is wrong so it
 	}
 
-	reqBody := User{}
-	err := c.Bind(&reqBody)
+	Pswd := c.GetHeader("password")
 
-	if err != nil {
+	if cheakPswd(userID, Pswd) == false {
 		res := gin.H{
-			"error": err,
+			"success": false,
 		}
 		c.JSON(http.StatusBadRequest, res)
-		return
 	}
 
-	if reqBody.UserID != userID {
-		res := gin.H{
-			"error": "user id is incorrect",
-		}
-		c.JSON(http.StatusBadRequest, res)
-		return
-	}
+	// reqBody := User{}
+
+	// if reqBody.Password == "" {
+	// 	res := gin.H{
+	// 		"error": "password must not be empty",
+	// 	}
+	// 	c.JSON(http.StatusBadRequest, res)
+	// 	return
+	// }
+
+	// if reqBody.Password != Pswd {
+	// 	res := gin.H{
+	// 		"error": "password is incorrect",
+	// 	}
+	// 	c.JSON(http.StatusBadRequest, res)
+	// 	return
+	// }
 
 	delete_user := deleteUserByID(userID)
 	res := gin.H{
-		"success": true,
-		"message": "user deleted",
-		"user":    delete_user,
+		"message": delete_user,
 	}
 	c.JSON(http.StatusOK, res)
-	return
 }
-
-//

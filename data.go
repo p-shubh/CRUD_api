@@ -1,9 +1,12 @@
 package main
 
-func getUserByID(userID string) User {
+func getUserByID(userID string, Password string) User {
 	user := User{}
-	if user, ok := Data[userID] ; ok {
-	  return user
+	if user, ok := Data[userID]; ok {
+		if user, ok := Data[Password]; ok {
+			return user
+		}
+		return user
 	}
 	return user
 }
