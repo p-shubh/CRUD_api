@@ -12,7 +12,7 @@ type User struct {
 	Phone    string `json:"phone"`
 	UserID   string `json:"user_id"`
 	City     string `json:"city"`
-	Password string `json:"password"`
+	Password string `json:"password" binding : "required"`
 }
 
 var Data map[string]User //data is of map type user is custom type data
@@ -22,7 +22,7 @@ func main() {
 	Data = make(map[string]User)
 	r := gin.Default()
 	setupRoutes(r)
-	r.Run(":8082")
+	r.Run(":8080")
 }
 
 /*
@@ -198,7 +198,8 @@ func DeleteUser(c *gin.Context) { //r.DELETE("/user/:user_id", DeleteUser)
 		res := gin.H{ /*gin.H is defined as type H map[string]struct{}*/
 			"error": "user id is missing",
 		}
-		c.JSON(http.StatusBadRequest, res) // we have to give response status ok but the user_id is wrong so it
+		c.JSON(http.StatusBadRequest, res)
+		return // we have to give response status ok but the user_id is wrong so it
 	}
 
 	Pswd := c.GetHeader("password")
@@ -208,15 +209,20 @@ func DeleteUser(c *gin.Context) { //r.DELETE("/user/:user_id", DeleteUser)
 			"success": false,
 		}
 		c.JSON(http.StatusBadRequest, res)
+		return
 	} else {
 
 		delete_user := deleteUserByID(userID)
+		// delete_user := deleteUserByID(userID)
+
 		res := gin.H{
 			"message": delete_user,
 		}
 		c.JSON(http.StatusOK, res)
-	}
+		return
+		// }
 
+	}
 }
 
 // reqBody := User{}
