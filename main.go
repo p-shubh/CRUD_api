@@ -43,6 +43,7 @@ func setupRoutes(r *gin.Engine) {
 	r.DELETE("/user/:user_id", DeleteUser)
 }
 
+//comment changes
 func GetUserByUserID(c *gin.Context) { //gin.context contains both http request and http response
 	UserID, ok := c.Params.Get("user_id")
 	if ok == false {
